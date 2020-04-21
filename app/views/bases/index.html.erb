@@ -1,0 +1,41 @@
+<% provide(:title, 'All Bases') %>
+<h1>拠点一覧</h1>
+
+<div>
+  <table class="table table-bordered table-condensed user-table">
+    <thead>
+    <tr>
+      <td></td>
+      <td></td>
+      <td>拠点番号</td>
+      <td>拠点名</td>
+      <td>勤怠種類</td>
+    </tr>
+    </thead>
+    
+    <tbody>
+  <% @bases.each do |base| %>
+    <tr>
+      <td><%= link_to "修正", edit_user_basis_path(@bases), class: "btn btn-primary" %></td>
+      <td><%= link_to "削除", "#", method: :delete, class: "btn btn-danger" %></td>
+      <td><%= l(@base.base_number) if @base.base_number.present? %></td>
+      <td><%= l(@base.base_name) if @base.base_name.present? %></td>
+      <td><%= l(@base.base_type) if @base.base_type.present? %></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <% end %>
+    </tbody>
+  </table>
+</div>
+
+<div>
+  <%= link_to "拠点情報追加", new_user_basis_path, class: "btn btn-primary" %>
+</div>
+
+

@@ -1,11 +1,13 @@
 class AttendancesController < ApplicationController
-  before_action :set_user, only: [:edit_one_month, :update_one_month]
-  before_action :logged_in_user, only: [:update, :edit_one_month]
+  before_action :set_user, only: [:edit_one_month, :update_one_month, :edit_over_time, :update_over_time, :edit_request_one_month, :update_request_one_month, :edit_change_request]
+  before_action :logged_in_user, only: [:update, :edit_one_month, :edit_over_time, :update_over_time, :edit_request_one_month, :update_request_one_month]
   before_action :admin_or_correct_user, only: [:update, :edit_one_month, :update_one_month]
-  before_action :set_one_month, only: :edit_one_month
+  before_action :set_one_month, only: [:edit_one_month, :edit_over_time, :update_over_time, :edit_request_one_month, :update_request_one_month]
 
   UPDATE_ERROR_MSG = "勤怠登録に失敗しました。やり直してください。"
-
+  def index
+  end
+  
   def update
     @user = User.find(params[:user_id])
     @attendance = Attendance.find(params[:id])
@@ -24,6 +26,27 @@ class AttendancesController < ApplicationController
       end
     end
     redirect_to @user
+  end
+  
+  def edit_change_request
+    @attendance = Attendance.find(params[:id])
+  end
+  
+  def update_change_request
+  end
+  
+  def edit_request_one_month
+    @attendance = Attendance.find(params[:id])
+  end
+  
+  def update_request_one_month
+  end
+  
+  def edit_over_time
+    @attendance = Attendance.find(params[:id])
+  end
+  
+  def update_over_time
   end
 
   def edit_one_month
@@ -49,6 +72,11 @@ class AttendancesController < ApplicationController
       end
     redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
   end
+  
+  def edit_log
+    @attendance = Attendance.find(params[:id])
+  end
+  
   private
 
     # 1ヶ月分の勤怠情報を扱います。

@@ -10,6 +10,12 @@ class UsersController < ApplicationController
     @users = User.paginate(page: params[:page])
   end
   
+  def import
+    # fileはtmpに自動で一時保存される
+    User.import(params[:file])
+    redirect_to users_url
+  end
+  
   def show
     @worked_sum = @attendances.where.not(started_at: nil).count
   end
@@ -62,11 +68,11 @@ class UsersController < ApplicationController
   private
   
     def user_params
-      params.require(:user).permit(:name, :email, :password, :department, :password_confirmation)
+      params.require(:user).permit(:name, :email, :password, :affiliation, :employee_number, :password_confirmation)
     end
     
     def basic_info_params
-      params.require(:user).permit(:department, :basic_time, :work_time)
+      params.require(:user).permit(:affiliation, :basic_time, :work_time)
     end
     
      # beforeフィルター
