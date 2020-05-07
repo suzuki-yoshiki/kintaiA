@@ -1,5 +1,5 @@
 <% provide(:class_text, 'basic-info') %>
-<% provide(:button_text, '変更を送信') %>
+<% provide(:button_text, '変更を送信する') %>
 
 <div class="modal-dialog modal-lg modal-dialog-center">
   <div class="modal-content">
@@ -7,33 +7,37 @@
       <button type="button" class="close" data-dismiss="modal" aria-label="Close">
         <span aria-hidden="true">&times;</span>
       </button>
-      <h1 class="modal-title">【残業申請】</h1>
+      <h1 class="modal-title">【<%= @user.name %>からの残業申請】</h1>
     </div>
     <div class="modal-body">
       <div class="row">
-        <div class="col-md-6 col-md-offset-3">
-          <%= form_with(model: @attendance, url: attendances_update_over_time_user_path(@user, @attendance), local: true, method: :patch) do |f| %>
-            <%= f.hidden_field :id, :value => @attendance.id %>
-            <%= f.hidden_field :user_id, :value => @user.id %>
+        <div class="col-md-10 col-md-offset-1">
           <table class="table table-bordered table-condensed user-table">
+           <%= form_with(model: @attendance, url: attendances_update_request_overtime_user_path, local: true, method: :patch) do |f| %>
            <thead> 
             <tr>
               <td>日付</td>
               <td>曜日</td>
               <td>終了予定時間</td>
-              <td>翌日</td>
+              <td>指定勤務終了時間</td>
+              <td>時間外時間</td>
               <td>業務処理内容</td>
               <td>指示者確認</td>
+              <td>変更</td>
+              <td>勤怠を確認</td>
             </tr>
            </thead>
            <tbody>
             <tr>
               <td><%= l(@attendance.worked_on, format: :short) %></td>
               <td><%= $days_of_the_week[@attendance.worked_on.wday] %></td>
-              <td><%= f.time_field :plan_finished_at, class: "form-control" %></td>
-              <td><%= f.check_box :tomorrow, {}, "true", "false" %></td>
+              <td></td>
+              <td></td>
+              <td></td>
               <td><%= f.text_field :business_process_content, class: "form-control" %></td>
-              <td><%= f.select :instructor_confirmation, [["選択してください"],["上長A"],["上長B"],["上長C"]] %></td>
+              <td><%= f.select :mark_instructor_confirmation, [["なし"],["申請中"],["承認"],["否認"]], class: "form-control" %></td>
+              <td><%= f.check_box :change, {}, "true", "false" %></td>
+              <td><%= link_to "確認", "#", class: "btn btn-primary" %></td>
             </tr>
            </tbody>
           </table>
@@ -43,12 +47,10 @@
                 キャンセル
               </button>
             </div>
+          <% end %>
           </div>
         </div>
       </div>
     </div>
-    </div>
-    </table>
-    <% end %>
   </div>
 </div>

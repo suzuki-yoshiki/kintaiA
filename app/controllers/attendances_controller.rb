@@ -1,11 +1,24 @@
 class AttendancesController < ApplicationController
-  before_action :set_user, only: [:edit_one_month, :update_one_month, :edit_over_time, :update_over_time, :edit_request_one_month, :update_request_one_month, :edit_change_request]
-  before_action :logged_in_user, only: [:update, :edit_one_month, :edit_over_time, :update_over_time, :edit_request_one_month, :update_request_one_month]
+  before_action :set_user, only: [:edit_one_month, :update_one_month, :edit_over_time, :update_over_time, :edit_request_one_month, :update_request_one_month, :edit_change_request, :edit_request_overtime]
+  before_action :logged_in_user, only: [:update, :edit_one_month, :edit_over_time, :update_over_time, :edit_request_one_month, :update_request_one_month, :edit_request_overtime]
   before_action :admin_or_correct_user, only: [:update, :edit_one_month, :update_one_month]
-  before_action :set_one_month, only: [:edit_one_month, :edit_over_time, :update_over_time, :edit_request_one_month, :update_request_one_month]
+  before_action :set_one_month, only: [:edit_one_month, :edit_over_time, :update_over_time, :edit_request_one_month, :update_request_one_month, :edit_request_overtime]
 
+  
   UPDATE_ERROR_MSG = "勤怠登録に失敗しました。やり直してください。"
   def index
+  end
+  
+  def show_work_time
+    @attendances = Attendance.all
+    respond_to do |format|
+     format.html do
+      #html用の処理を書く
+     end 
+      format.csv do
+         send_data render_to_string, filename: "show_work_time.csv", type: :csv
+      end
+    end
   end
   
   def update
@@ -28,6 +41,13 @@ class AttendancesController < ApplicationController
     redirect_to @user
   end
   
+  def edit_request_overtime
+    @attendance = Attendance.find(params[:id])
+  end
+  
+  def update_request_overtime
+  end
+  
   def edit_change_request
     @attendance = Attendance.find(params[:id])
   end
@@ -40,13 +60,31 @@ class AttendancesController < ApplicationController
   end
   
   def update_request_one_month
+    @user = User.find(params[:id])
+    @attendance = Attendance.find(params[:id])
+    if params[:attendance][:instructor_confirmation].blank?
+       flash[:danger] = "承認申請できませんでした。"
+    else @attendance.update.attributes(requests_params)
+       flash[:success] = "承認申請しました。"
+    end
+       redirect_to user_url @user
   end
   
   def edit_over_time
+    @user = User.find(params[:id])
     @attendance = Attendance.find(params[:id])
+    @date = @user.attendances.where(worked_on: @first_day..@last_day)
   end
   
   def update_over_time
+    @attendance = Attendance.find(params[:id])
+    @user = User.find(params[:attendance][:user_id])
+    if params[:attendance][:plan_finished_at].blank? || params[:attendance][:instructor_confirmation].blank?
+      flash.now[:danger] = "必須箇所が空欄です。"
+    else @attendance.update_attributes(over_time_params)
+      flash.now[:success] = "残業申請しました。"
+    end
+    redirect_to user_url @user
   end
 
   def edit_one_month
@@ -83,6 +121,17 @@ class AttendancesController < ApplicationController
     def attendances_params
       params.require(:user).permit(attendances: [:started_at, :finished_at, :note])[:attendances]
     end
+    
+    #残業申請の情報
+    def over_time_params
+      params.require(:attendance).permit(:plan_finished_at, :tomorrow, :business_process_content, :instructor_confirmation)
+    end
+    
+    def requests_params
+      params.require(:attendance).permit(:mark_instructor_confirmation, :instructor_confirmation)
+    end
+    
+    
 
     # beforeフィルター
 

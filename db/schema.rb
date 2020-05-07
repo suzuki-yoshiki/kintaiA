@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200421024751) do
+ActiveRecord::Schema.define(version: 20200507015353) do
 
   create_table "attendances", force: :cascade do |t|
     t.date "worked_on"
@@ -20,11 +20,12 @@ ActiveRecord::Schema.define(version: 20200421024751) do
     t.integer "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "attendance_type"
     t.string "tomorrow"
     t.string "business_process_content"
     t.string "instructor_confirmation"
     t.datetime "plan_finished_at"
+    t.string "change"
+    t.string "mark_instructor_confirmation"
     t.index ["user_id"], name: "index_attendances_on_user_id"
   end
 
@@ -32,10 +33,18 @@ ActiveRecord::Schema.define(version: 20200421024751) do
     t.string "base_name"
     t.string "base_type"
     t.integer "base_number"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "requests", force: :cascade do |t|
+    t.date "month"
+    t.integer "mark"
+    t.integer "superior_id"
     t.integer "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_bases_on_user_id"
+    t.integer "authorizer"
   end
 
   create_table "users", force: :cascade do |t|
@@ -46,16 +55,15 @@ ActiveRecord::Schema.define(version: 20200421024751) do
     t.string "password_digest"
     t.string "remember_digest"
     t.boolean "admin", default: false
-    t.string "department"
-    t.datetime "basic_time", default: "2020-04-20 23:00:00"
-    t.datetime "work_time", default: "2020-04-20 22:30:00"
+    t.datetime "basic_time", default: "2020-05-06 23:00:00"
+    t.datetime "work_time", default: "2020-05-06 22:30:00"
     t.integer "employee_number"
     t.bigint "uid"
     t.boolean "superior", default: false
-    t.datetime "designated_work_start_time"
-    t.datetime "designated_work_end_time"
+    t.datetime "designated_work_start_time", default: "2020-05-06 23:00:00"
+    t.datetime "designated_work_end_time", default: "2020-05-06 23:00:00"
     t.string "affiliation"
-    t.integer "base_id"
+    t.datetime "basic_work_time", default: "2020-05-06 23:00:00"
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 

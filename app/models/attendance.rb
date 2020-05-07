@@ -3,7 +3,12 @@ class Attendance < ApplicationRecord
   
   validates :worked_on, presence: true
   validates :note, length: { maximum: 50 }
-  validates :attendance_type, length: { maximum: 50 }
+  validates :plan_finished_at, presence: true
+  validates :instructor_confirmation, presence: true
+  validates :mark_instructor_confirmation, presence: true, allow_blank: true
+  validates :business_process_content, presence: true, allow_blank: true
+  validates :tomorrow, presence: true, allow_blank: true
+  validates :change, presence: true, allow_blank: true
   
   # 出勤時間が存在しない場合、退勤時間は無効
   validate :finished_at_is_invalid_without_a_started_at

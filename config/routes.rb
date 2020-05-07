@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  
   root 'staticpages#top'
   get '/signup', to: 'users#new'
   
@@ -14,23 +15,26 @@ Rails.application.routes.draw do
     member do
       get 'edit_basic_info'
       patch 'update_basic_info'
-      
+      get 'edit2_basic_info'
+      get 'attendance_work'
+      get 'attendances/show_work_time'
       get 'attendances/edit_one_month'
       patch 'attendances/update_one_month'
-      
-      get 'attendances/edit_over_time'
+      get 'attendances/edit_over_time'  #残業申請
       patch 'attendances/update_over_time'
-      
-      get 'attendances/edit_request_one_month'
+      get 'attendances/edit_request_one_month' #所属長承認申請のお知らせ
       patch 'attendances/update_request_one_month'
-      
-      get 'attendances/edit_change_request'
+      get 'attendances/edit_change_request'   #勤怠変更申請のお知らせ
       patch 'attendances/update_change_request'
-      
-      get 'attendances/edit_log'
-    
+      get 'attendances/edit_request_overtime' #残業申請のお知らせ
+      patch 'attendances/update_request_overtime'
+      get 'attendances/edit_log' #勤怠ログ
     end
-    resources :attendances
-    resources :bases
-  end
+    resources :attendances, only: [:update, :index] #勤怠
+    resources :requests, only: [:update]
+    end
+    resources :bases do #拠点
+    end
 end
+
+

@@ -11,7 +11,7 @@
     </div>
     <div class="modal-body">
       <div class="row">
-        <div class="col-md-6 col-md-offset-3">
+        <div class="col-md-10 col-md-offset-1">
           <table class="table table-bordered table-condensed user-table">
            <%= form_with(model: @attendance, url: attendances_update_request_one_month_user_path, local: true, method: :post) do |f| %>
              <thead>
@@ -25,8 +25,8 @@
              <tbody>
               <tr>
                 <td><%= l(@attendance.worked_on, format: :month) %></td>
-                <td><%= f.select :instructor_confirmation, [["なし"],["申請中"],["承認"],["否認"]], class: "form-control" %></td>
-                <td><%= f.check_box :tomorrow %></td>
+                <td><%= f.select :mark_instructor_confirmation, [["なし"],["申請中"],["承認"],["否認"]], class: "form-control" %></td>
+                <td><%= f.check_box :tomorrow, {}, "true", "false" %></td>
                 <td><%= link_to "確認", "#", class: "btn btn-primary" %></td>
               </tr>
              </tbody>

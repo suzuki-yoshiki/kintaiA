@@ -3,39 +3,33 @@
 
 <div>
   <table class="table table-bordered table-condensed user-table">
-    <thead>
-    <tr>
-      <td></td>
-      <td></td>
-      <td>拠点番号</td>
-      <td>拠点名</td>
-      <td>勤怠種類</td>
-    </tr>
-    </thead>
-    
-    <tbody>
-  <% @bases.each do |base| %>
-    <tr>
-      <td><%= link_to "修正", edit_user_basis_path(@bases), class: "btn btn-primary" %></td>
-      <td><%= link_to "削除", "#", method: :delete, class: "btn btn-danger" %></td>
-      <td><%= l(@base.base_number) if @base.base_number.present? %></td>
-      <td><%= l(@base.base_name) if @base.base_name.present? %></td>
-      <td><%= l(@base.base_type) if @base.base_type.present? %></td>
-    </tr>
-    <tr>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-    </tr>
+   <thead>
+      <tr>
+        <td>編集</td>
+        <td>削除</td>
+        <td>拠点名</td>
+        <td>拠点番号</td>
+        <td>勤怠種類</td>
+      </tr>
+   </thead>
+   <tbody>
+      <% @bases.each do |base| %>
+      <tr>
+        <td><%= link_to "編集", edit_basis_path(base), class: "btn btn-primary" %></td>
+        <td><%= link_to "削除", basis_path(id:base.id), method: :delete,
+                data: { confirm: "削除しますか？" }, class: "btn btn-danger" %></td>
+        <td><%= base.base_name %></td>
+        <td><%= base.base_number %></td>
+        <td><%= base.base_type %></td>
+      </tr>
     <% end %>
-    </tbody>
+   </tbody>
   </table>
 </div>
 
 <div>
-  <%= link_to "拠点情報追加", new_user_basis_path, class: "btn btn-primary" %>
+  <%= link_to "拠点情報追加", new_basis_path, class: "btn btn-primary" %>
 </div>
 
-
+<!--モーダルウインドウ表示-->
+<div id="edit" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>

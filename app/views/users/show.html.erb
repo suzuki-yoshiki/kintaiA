@@ -8,9 +8,8 @@
           <%= l(@first_day, format: :middle) %>勤怠管理表
           <%= link_to "⇨", user_path(date: @first_day.next_month), class: "btn btn-info" %>
       </td>
-      <td>指定勤務時間：<%= format_basic_info(@user.work_time) %>
-      <br>指定勤務開始時間
-      <br>指定勤務終了時間
+      <td>指定勤務開始時間：<%= @user.designated_work_start_time %>
+      <br>指定勤務終了時間：<%= @user.designated_work_end_time %>
       </td>
       <td colspan = "3">基本時間：<%= format_basic_info(@user.basic_time) %></td>
       <td>月初日：<%= l(@first_day, format: :short) %></td>
@@ -29,16 +28,16 @@
 
  <% if current_user.superior? %>
   <div class="btn-users-show">
-   <%= link_to "【所属長承認申請のお知らせ】", attendances_edit_request_one_month_user_path(@user), remote: true, class: "btn btn-link" %>
-   <br><%= link_to "【勤怠変更申請のお知らせ】", attendances_edit_change_request_user_path(@user), remote: true, class: "btn btn-link" %>
-   <br><%= link_to "【残業申請のお知らせ】", "#", class: "btn btn-link" %>
-  </div>
+   <p><%= link_to "【所属長承認申請のお知らせ】", attendances_edit_request_one_month_user_path(@user), remote: true, class: "btn btn-link" %> <a class = "box1"><%= @attendances.count %>件通知がありました</a></p></div>
+   <div class="btn-users-show">
+   <p><%= link_to "【勤怠変更申請のお知らせ】", attendances_edit_change_request_user_path(@user), remote: true, class: "btn btn-link" %>通知</p></div>
+   <div class="btn-users-show">
+   <p><%= link_to "【残業申請のお知らせ】", attendances_edit_request_overtime_user_path(@user), remote: true, class: "btn btn-link" %>通知</p></div>
  <% end %>
-
 
 <div class="btn-users-show">
   <%= link_to "1ヶ月の勤怠編集へ", attendances_edit_one_month_user_path(date: @first_day), class: "btn btn-success" %>
-  <%= link_to "CSV出力", "#", class: "btn btn-primary" %>
+  <%= link_to "CSV出力", attendances_show_work_time_user_path(format: :csv), class: "btn btn-primary" %>
   <br><%= link_to "勤怠修正ログ（承認済）", attendances_edit_log_user_path, class: "btn btn-primary" %>
 </div>
 
@@ -78,9 +77,25 @@
     <tbody>
       <% @attendances.each do |day| %>
         <tr>
-          <td><%= link_to "残業申請", attendances_edit_over_time_user_path(@user), remote: true, class: "btn btn-primary" %></td>
+          <td><%= link_to "残業申請", attendances_edit_over_time_user_path(@user, @date), remote: true, class: "btn btn-primary" %></td>
           <td><%= l(day.worked_on, format: :short) %></td>
-          <td><%= $days_of_the_week[day.worked_on.wday] %></td>
+          <td>
+            <% if day.worked_on.wday == 6 %>
+              <font color="blue">土</font>
+            <% elsif day.worked_on.wday == 0 %>
+              <font color="red">日</font>
+            <% elsif day.worked_on.wday == 1 %>
+              <font color="black">月</font>
+            <% elsif day.worked_on.wday == 2 %>
+              <font color="black">火</font>
+            <% elsif day.worked_on.wday == 3 %>
+              <font color="black">水</font>
+            <% elsif day.worked_on.wday == 4 %>
+              <font color="black">木</font>
+            <% elsif day.worked_on.wday == 5 %>
+              <font color="black">金</font>
+            <% end %>     
+          </td>
           <td><%= l(day.started_at, format: :hour) if day.started_at.present? %></td>
           <td><%= format_min(day.started_at) if day.started_at.present? %></td>
           <td>
@@ -97,12 +112,12 @@
               <% @total_working_times = @total_working_times.to_f + str_times.to_f %>
               <% end %>
           </td>
-          <td></td>
-          <td></td>
-          <td></td>
+          <td><%= day.note %></td>
+          <td><%= l(day.plan_finished_at, format: :hour) if day.plan_finished_at.present? %></td>
+          <td><%= l(day.plan_finished_at, format: :min) if day.plan_finished_at.present? %></td>
           <td colspan = "2"></td>
-          <td colspan = "2"></td>
-          <td></td>
+          <td colspan = "2"><%= day.business_process_content %></td>
+          <td><%= day.mark_instructor_confirmation %></td>
         </tr>
       <% end %>
     </tbody>
@@ -116,13 +131,15 @@
         <td colspan="6">総合勤務時間</td>
         <td colspan="4">累計在社時間</td>
         <td></td>
-        <td colspan="6"  rowspan = "2"></td>
+        <td colspan="6"  rowspan = "2">
+        </td>
         <td rowspan = "2">
           <div>所属長承認
-            <%= form_with(model: @user, url: attendances_edit_request_one_month_user_path(@user), local: true) do |f| %>
-            <br><%= f.select :name, [["選択してください"], ["上長A"], ["上長B"], ["上長C"]], class: "form-control" %>
+            <%= form_with(model: @attendance, url: attendances_update_request_one_month_user_path(@user, @attendances), local: true, method: :patch) do |f| %>
+            <br><%= f.select :instructor_confirmation, [["選択してください"], ["上長A"], ["上長B"], ["上長C"]], class: "form-control" %>
             <br><%= f.submit yield(:button_text), class: "btn btn-primary form-control btn-#{yield(:class_text)}" %>
             <% end %>
+          </div>
           </div>
         </td>
       </tr>
